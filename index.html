@@ -1210,12 +1210,53 @@ function showToast(msg){
   clearTimeout(showToast._t);
   showToast._t = setTimeout(()=>toast.classList.remove('show'), 3600);
 }
-document.getElementById('bookForm').addEventListener('submit', e=>{
+document.getElementById('bookForm').addEventListener('submit', async e=>{
   e.preventDefault();
+
   const f = e.target;
-  if(!f.checkValidity()){ f.reportValidity(); return; }
-  showToast(I18N[currentLang].toastOk);
-  f.reset();
+
+  if(!f.checkValidity()){
+    f.reportValidity();
+    return;
+  }
+
+  const bookingData = {
+    name: document.getElementById('bfName').value,
+    phone: document.getElementById('bfPhone').value,
+    booking_date: document.getElementById('bfDate').value,
+    booking_time: document.getElementById('bfTime').value,
+    service: document.getElementById('bfService').value,
+    comment: document.getElementById('bfNote').value,
+    consultation: document.getElementById('bfConsult').checked
+  };
+
+  try {
+
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/bookings`,
+      {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(bookingData)
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Supabase error');
+    }
+
+    showToast(I18N[currentLang].toastOk);
+    f.reset();
+
+  } catch(error) {
+    console.error(error);
+    alert('Booking save error');
+  }
 });
 
 const dateInput = document.getElementById('bfDate');
