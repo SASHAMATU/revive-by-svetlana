@@ -687,7 +687,7 @@ a{color:inherit;text-decoration:none}
               </div>
               <div class="form-group">
                 <label for="bfTime" data-i="lblTime"></label>
-                <input type="time" id="bfTime" required>
+                <select id="bfTime" required></select>
               </div>
             </div>
             <div class="form-group full" style="margin-bottom:14px">
@@ -1126,7 +1126,19 @@ function render(lang){
     });
   });
   sel.innerHTML = html;
+const timeSelect = document.getElementById('bfTime');
 
+let timeHtml = '<option value="">Оберіть час</option>';
+
+for(let h = 9; h <= 19; h++){
+  ['00','30'].forEach(m => {
+    if(h === 19 && m === '30') return;
+    const t = `${String(h).padStart(2,'0')}:${m}`;
+    timeHtml += `<option value="${t}">${t}</option>`;
+  });
+}
+
+timeSelect.innerHTML = timeHtml;
   document.getElementById('reviewsGrid').innerHTML = t.reviews.map(r=>`
     <div class="review">
       <p>«${r.t}»</p>
