@@ -1122,7 +1122,7 @@ function render(lang){
   let html = `<option value="">${t.optChoose}</option>`;
   ['body','local','model'].forEach(cat=>{
     PRICES[cat].forEach(item=>{
-      html += `<option>${item[lang][0]}</option>`;
+      html += <option>${item[lang][0]} (${item[lang][1]})</option>;
     });
   });
   sel.innerHTML = html;
