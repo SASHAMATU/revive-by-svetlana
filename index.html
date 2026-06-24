@@ -1317,31 +1317,15 @@ if (hasConflict) {
     if (!response.ok) {
       throw new Error('Supabase error');
     }
-const TELEGRAM_BOT_TOKEN = '8812424759: AAG1NgeHdP3 jPTYr7C7Sg2sXheq55KNI4i8';
-const TELEGRAM_CHAT_ID = '8812424759';
-
-const telegramMessage = `
-🔔 Нова заявка
-
-👤 Ім'я: ${bookingData.name}
-📞 Телефон: ${bookingData.phone}
-📅 Дата: ${bookingData.booking_date}
-⏰ Час: ${bookingData.booking_time}
-💆 Послуга: ${bookingData.service}
-📝 Коментар: ${bookingData.comment || '-'}
-`;
 
 await fetch(
-  `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+  'https://pcezfybtdztwedfsaztf.supabase.co/functions/v1/send-telegram',
   {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      chat_id: TELEGRAM_CHAT_ID,
-      text: telegramMessage
-    })
+    body: JSON.stringify(bookingData)
   }
 );
     showToast(I18N[currentLang].toastOk);
