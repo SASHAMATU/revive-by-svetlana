@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REVIVE · Адмін-панель</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#1a0f0a;
+  --bg-2:#231510;
+  --surface:#2a1810;
+  --surface-2:#322015;
+  --line:rgba(244,184,142,.18);
+  --line-soft:rgba(244,184,142,.08);
+  --peach:#f4b88e;
+  --gold-bright:#f5d4a9;
+  --sand:#f0d4b3;
+  --rose:#e4a48a;
+  --ink:#fbf1e3;
+  --muted:#b59f8c;
+  --muted-2:#7a665a;
+  --danger:#e07a6b;
+  --danger-soft:rgba(224,122,107,.15);
+  --ok:#a8c79e;
+  --radius:18px;
+  --display:'Oswald',sans-serif;
+  --serif:'Cormorant Garamond',serif;
+  --body:'Manrope',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.55;
+  -webkit-font-smoothing:antialiased;min-height:100vh;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 10% 0%,rgba(244,184,142,.06) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 100% 100%,rgba(228,164,138,.05) 0%,transparent 60%)}
+
+/* ─── COMMON ─── */
+.wrap{max-width:1280px;margin:0 auto;padding:24px 20px}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+a{color:var(--peach);text-decoration:none;transition:color .25s}
+a:hover{color:var(--gold-bright)}
+
+/* ─── HEADER ─── */
+.header{position:sticky;top:0;z-index:20;
+  background:linear-gradient(180deg,rgba(26,15,10,.96),rgba(26,15,10,.78) 70%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--line-soft)}
+.header-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0}
+.logo{display:flex;align-items:baseline;gap:8px}
+.logo-main{font-family:var(--display);font-weight:500;letter-spacing:.42em;color:var(--peach);font-size:22px}
+.logo-sub{font-family:var(--serif);font-style:italic;color:var(--sand);font-size:15px;opacity:.85}
+.logo-tag{margin-left:14px;font-family:var(--display);font-size:11px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--muted-2);padding:4px 10px;border:1px solid var(--line);border-radius:999px}
+.user-block{display:flex;align-items:center;gap:14px}
+.user-email{font-size:13px;color:var(--muted);letter-spacing:.02em;display:none}
+@media(min-width:760px){.user-email{display:inline}}
+
+/* ─── BUTTONS ─── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--display);font-weight:500;letter-spacing:.12em;font-size:12.5px;
+  text-transform:uppercase;padding:11px 18px;border-radius:999px;
+  transition:transform .25s ease,background .25s ease,box-shadow .25s ease,color .25s ease;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  border:1px solid transparent;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--sand),var(--gold-bright));color:#2a180f;
+  box-shadow:0 6px 16px rgba(244,184,142,.18)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(245,212,169,.35)}
+.btn-primary:active{transform:scale(.97)}
+.btn-ghost{background:transparent;color:var(--peach);border-color:var(--line)}
+.btn-ghost:hover{border-color:var(--peach);background:rgba(244,184,142,.06);color:var(--gold-bright)}
+.btn-danger{background:var(--danger-soft);color:var(--danger);border-color:rgba(224,122,107,.3)}
+.btn-danger:hover{background:rgba(224,122,107,.25);border-color:var(--danger)}
+.btn-sm{padding:7px 12px;font-size:11px;letter-spacing:.1em}
+.btn[disabled]{opacity:.5;cursor:not-allowed;pointer-events:none}
+
+/* ─── CONFIG WARNING ─── */
+.config-warning{background:rgba(224,122,107,.12);border:1px solid rgba(224,122,107,.4);
+  color:var(--ink);padding:18px 22px;border-radius:14px;margin:24px 0;font-size:14px;line-height:1.6}
+.config-warning strong{display:block;font-family:var(--display);text-transform:uppercase;
+  letter-spacing:.12em;color:var(--danger);margin-bottom:10px;font-size:13px}
+.config-warning code{font-family:'Menlo','Consolas',monospace;font-size:12.5px;
+  background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;color:var(--peach)}
+.config-warning pre{margin-top:12px;background:rgba(0,0,0,.4);padding:14px;border-radius:8px;
+  font-family:'Menlo','Consolas',monospace;font-size:12px;overflow-x:auto;color:var(--sand);line-height:1.5}
+
+/* ─── LOGIN ─── */
+.login-screen{min-height:calc(100vh - 70px);display:flex;align-items:center;justify-content:center;padding:24px}
+.login-card{width:100%;max-width:420px;
+  background:linear-gradient(135deg,var(--surface),var(--bg-2));
+  border:1px solid var(--line);border-radius:var(--radius);padding:40px 32px;
+  box-shadow:0 30px 60px rgba(0,0,0,.5)}
+.login-title{font-family:var(--display);font-weight:600;text-transform:uppercase;
+  letter-spacing:.04em;font-size:26px;line-height:1.1;margin-bottom:8px}
+.login-title .accent{font-family:var(--serif);font-style:italic;font-weight:600;color:var(--peach);
+  text-transform:none;letter-spacing:0;margin-left:6px}
+.login-sub{color:var(--muted);font-size:14px;margin-bottom:28px}
+
+/* ─── FORM ─── */
+.form-group{display:flex;flex-direction:column;margin-bottom:16px}
+.form-group label{font-family:var(--display);font-size:11px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--sand);margin-bottom:8px;font-weight:500}
+.form-group input,.form-group select,.form-group textarea{
+  background:rgba(245,239,231,.04);border:1px solid var(--line);padding:12px 14px;
+  color:var(--ink);font-family:var(--body);font-size:14px;border-radius:8px;
+  transition:all .25s;width:100%;outline:none}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{
+  border-color:var(--peach);background:rgba(245,239,231,.08);
+  box-shadow:0 0 0 3px rgba(244,184,142,.12)}
+.form-group select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%23f4b88e' stroke-width='1.5'><path d='M1 1 L6 6 L11 1'/></svg>");background-repeat:no-repeat;background-position:right 14px center;background-size:12px;padding-right:38px}
+.form-group select option{background:#231510;color:var(--ink)}
+.form-group textarea{resize:vertical;min-height:80px;font-family:var(--body)}
+.form-group .checkbox-row{display:flex;align-items:center;gap:10px;margin-top:4px}
+.form-group .checkbox-row input[type="checkbox"]{width:18px;height:18px;accent-color:var(--peach);cursor:pointer}
+.form-group .checkbox-row label{margin:0;text-transform:none;letter-spacing:0;font-size:13.5px;color:var(--sand);cursor:pointer;font-family:var(--body);font-weight:400}
+.form-error{color:var(--danger);font-size:13px;margin-top:8px;min-height:18px}
+.form-actions{display:flex;gap:10px;margin-top:8px}
+.form-actions .btn{flex:1}
+
+/* ─── TOOLBAR ─── */
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;
+  margin:30px 0 22px}
+.toolbar-title{font-family:var(--display);font-weight:600;text-transform:uppercase;
+  letter-spacing:.04em;font-size:24px}
+.toolbar-title .count{color:var(--peach);font-weight:400;margin-left:8px;font-size:18px}
+.toolbar-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.search{position:relative;display:inline-flex;align-items:center}
+.search input{background:rgba(245,239,231,.04);border:1px solid var(--line);
+  padding:10px 14px 10px 36px;color:var(--ink);font-family:var(--body);font-size:13.5px;
+  border-radius:999px;outline:none;min-width:200px;transition:all .25s}
+.search input:focus{border-color:var(--peach);background:rgba(245,239,231,.07)}
+.search svg{position:absolute;left:12px;width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:2;pointer-events:none}
+
+/* ─── TABLE ─── */
+.table-wrap{background:linear-gradient(135deg,var(--surface),var(--bg-2));
+  border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+  box-shadow:0 20px 40px rgba(0,0,0,.35)}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;min-width:1000px}
+th{font-family:var(--display);font-weight:500;letter-spacing:.14em;font-size:11px;
+  text-transform:uppercase;color:var(--muted);text-align:left;padding:18px 16px;
+  border-bottom:1px solid var(--line);background:rgba(0,0,0,.2);position:sticky;top:0;z-index:1;white-space:nowrap}
+td{padding:14px 16px;border-bottom:1px solid var(--line-soft);font-size:14px;vertical-align:middle}
+tbody tr{transition:background .2s}
+tbody tr:hover{background:rgba(244,184,142,.04)}
+tbody tr:last-child td{border-bottom:none}
+td.muted{color:var(--muted-2)}
+td.actions{white-space:nowrap;text-align:right}
+td.actions .btn{margin-left:6px}
+td .badge-pill{display:inline-block;padding:3px 10px;border-radius:999px;
+  font-family:var(--display);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase}
+.badge-pill.yes{background:rgba(168,199,158,.15);color:var(--ok)}
+.badge-pill.no{background:rgba(180,160,140,.1);color:var(--muted-2)}
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty-state .icon{font-size:42px;margin-bottom:14px}
+.loading-state{text-align:center;padding:60px 20px;color:var(--muted);font-family:var(--display);letter-spacing:.16em;font-size:12px;text-transform:uppercase}
+
+/* ─── MODAL ─── */
+.modal-backdrop{position:fixed;inset:0;background:rgba(8,5,3,.7);backdrop-filter:blur(6px);
+  z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;
+  opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-backdrop.open{opacity:1;pointer-events:auto}
+.modal{background:linear-gradient(135deg,var(--surface),var(--bg-2));
+  border:1px solid var(--line);border-radius:var(--radius);padding:30px;
+  width:100%;max-width:520px;max-height:90vh;overflow-y:auto;
+  box-shadow:0 40px 80px rgba(0,0,0,.6);
+  transform:scale(.95);transition:transform .25s}
+.modal-backdrop.open .modal{transform:scale(1)}
+.modal-title{font-family:var(--display);font-weight:600;text-transform:uppercase;
+  letter-spacing:.04em;font-size:22px;margin-bottom:6px}
+.modal-sub{color:var(--muted);font-size:13.5px;margin-bottom:22px}
+.modal-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-row .form-group{margin-bottom:14px}
+.modal .form-group{margin-bottom:14px}
+.modal .form-actions{margin-top:18px}
+@media(max-width:520px){
+  .modal-row{grid-template-columns:1fr}
+  .modal{padding:24px 20px}
+}
+
+/* confirm modal small */
+.modal.modal-sm{max-width:380px}
+.modal.modal-sm .modal-title{font-size:18px}
+.modal.modal-sm .modal-text{color:var(--sand);font-size:14px;line-height:1.5;margin-bottom:20px}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);
+  background:linear-gradient(135deg,var(--sand),var(--gold-bright));color:#2a180f;
+  padding:14px 24px;border-radius:999px;font-family:var(--display);letter-spacing:.06em;
+  font-size:13px;text-transform:uppercase;font-weight:600;z-index:200;
+  box-shadow:0 14px 40px rgba(245,212,169,.4);
+  opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.2,.7,.3,1);max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{background:linear-gradient(135deg,#d8736a,#e08a7f);color:#fff}
+
+/* ─── HIDDEN ─── */
+.hidden{display:none!important}
+
+/* ─── MOBILE TABLE FALLBACK ─── */
+@media(max-width:760px){
+  .toolbar-title{font-size:20px}
+  .toolbar{margin:20px 0 16px}
+  td,th{padding:12px 10px;font-size:13px}
+  .btn-sm{padding:6px 9px;font-size:10.5px}
+}
+</style>
+</head>
+<body>
+
+<!-- ─── HEADER ─── -->
+<header class="header">
+  <div class="wrap header-row">
+    <a href="/" class="logo">
+      <span class="logo-main">REVIVE</span>
+      <span class="logo-sub">by Svetlana</span>
+      <span class="logo-tag">Admin</span>
+    </a>
+    <div class="user-block">
+      <span class="user-email" id="userEmail"></span>
+      <button class="btn btn-ghost btn-sm hidden" id="logoutBtn">Вийти</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- Config warning -->
+  <div class="config-warning hidden" id="configWarning">
+    <strong>⚠ Введіть ключі Supabase</strong>
+    Відкрийте <code>admin.html</code> у редакторі та заповніть <code>SUPABASE_URL</code> і <code>SUPABASE_ANON_KEY</code> на початку <code>&lt;script&gt;</code> — ті самі ключі, що використовуються на основному сайті.
+  </div>
+
+  <!-- ─── LOGIN SCREEN ─── -->
+  <section class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <h1 class="login-title">УВІЙТИ В <span class="accent">адмінку</span></h1>
+      <p class="login-sub">Введіть email та пароль адміністратора.</p>
+      <form id="loginForm" novalidate>
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Пароль</label>
+          <input type="password" id="loginPassword" required autocomplete="current-password">
+        </div>
+        <div class="form-error" id="loginError"></div>
+        <button type="submit" class="btn btn-primary" id="loginBtn" style="width:100%">
+          <span>Увійти</span><span>→</span>
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ─── ADMIN PANEL ─── -->
+  <section class="hidden" id="adminPanel">
+    <div class="toolbar">
+      <h2 class="toolbar-title">Записи <span class="count" id="totalCount"></span></h2>
+      <div class="toolbar-actions">
+        <div class="search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="search" id="searchInput" placeholder="Пошук за імʼям, телефоном…">
+        </div>
+        <button class="btn btn-ghost" id="refreshBtn" title="Оновити">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>
+          Оновити
+        </button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table id="bookingsTable">
+          <thead>
+            <tr>
+              <th>Імʼя</th>
+              <th>Телефон</th>
+              <th>Дата</th>
+              <th>Час</th>
+              <th>Послуга</th>
+              <th>Консультація</th>
+              <th>Коментар</th>
+              <th style="text-align:right">Дії</th>
+            </tr>
+          </thead>
+          <tbody id="bookingsBody"></tbody>
+        </table>
+      </div>
+      <div id="emptyState" class="empty-state hidden">
+        <div class="icon">📭</div>
+        <div>Поки що немає записів.</div>
+      </div>
+      <div id="loadingState" class="loading-state">Завантаження…</div>
+    </div>
+  </section>
+</div>
+
+<!-- ─── EDIT MODAL ─── -->
+<div class="modal-backdrop" id="editModal">
+  <div class="modal">
+    <h3 class="modal-title">Редагувати запис</h3>
+    <p class="modal-sub" id="editSub">ID: —</p>
+    <form id="editForm" novalidate>
+      <input type="hidden" id="editId">
+      <div class="modal-row">
+        <div class="form-group">
+          <label for="editName">Імʼя</label>
+          <input type="text" id="editName" required>
+        </div>
+        <div class="form-group">
+          <label for="editPhone">Телефон</label>
+          <input type="tel" id="editPhone" required>
+        </div>
+      </div>
+      <div class="modal-row">
+        <div class="form-group">
+          <label for="editDate">Дата</label>
+          <input type="date" id="editDate">
+        </div>
+        <div class="form-group">
+          <label for="editTime">Час</label>
+          <input type="time" id="editTime">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="editService">Послуга</label>
+        <input type="text" id="editService">
+      </div>
+      <div class="form-group">
+        <div class="checkbox-row">
+          <input type="checkbox" id="editConsultation">
+          <label for="editConsultation">Потрібна особиста консультація</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="editNote">Коментар</label>
+        <textarea id="editNote"></textarea>
+      </div>
+      <div class="form-error" id="editError"></div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal>Скасувати</button>
+        <button type="submit" class="btn btn-primary" id="saveBtn">Зберегти</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ─── CONFIRM DELETE MODAL ─── -->
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal modal-sm">
+    <h3 class="modal-title">Видалити запис?</h3>
+    <p class="modal-text" id="confirmText">Цю дію не можна скасувати.</p>
+    <div class="form-actions">
+      <button type="button" class="btn btn-ghost" data-close-modal>Скасувати</button>
+      <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Видалити</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   КОНФІГУРАЦІЯ — ЗАПОВНИТИ ПЕРЕД ВИКОРИСТАННЯМ
+   Знайти на supabase.com → Project → Settings → API
+   ═══════════════════════════════════════════════════════════════════ */
+const SUPABASE_URL  = ''; // ← https://xxxxx.supabase.co
+const SUPABASE_ANON_KEY = ''; // ← eyJ...
+
+/* Якщо колонки в вашій таблиці bookings називаються інакше — підправте тут. */
+const COL = {
+  name:         'name',
+  phone:        'phone',
+  date:         'date',
+  time:         'time',
+  service:      'service',
+  consultation: 'consultation',
+  note:         'note'
+};
+const TABLE = 'bookings';
+/* ═══════════════════════════════════════════════════════════════════ */
+
+const $ = sel => document.querySelector(sel);
+const $$ = sel => document.querySelectorAll(sel);
+
+/* ─── TOAST ─── */
+const toast = $('#toast');
+let toastTimer;
+function showToast(msg, isError){
+  toast.textContent = msg;
+  toast.classList.toggle('error', !!isError);
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toast.classList.remove('show'), 3400);
+}
+
+/* ─── MODAL CONTROL ─── */
+function openModal(id){ $('#'+id).classList.add('open'); }
+function closeModal(id){ $('#'+id).classList.remove('open'); }
+$$('[data-close-modal]').forEach(btn => btn.addEventListener('click', () => {
+  btn.closest('.modal-backdrop').classList.remove('open');
+}));
+$$('.modal-backdrop').forEach(bd => bd.addEventListener('click', e => {
+  if (e.target === bd) bd.classList.remove('open');
+}));
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') $$('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
+});
+
+/* ─── INIT GUARD ─── */
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  $('#configWarning').classList.remove('hidden');
+  $('#loginScreen').classList.add('hidden');
+}
+
+if (!window.supabase) {
+  showToast('Не вдалося завантажити Supabase SDK', true);
+}
+
+/* ─── SUPABASE CLIENT ─── */
+let sb = null;
+if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase) {
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true }
+  });
+}
+
+/* ─── AUTH ─── */
+async function refreshAuthUI(){
+  if (!sb) return;
+  const { data: { user } } = await sb.auth.getUser();
+  if (user) {
+    $('#loginScreen').classList.add('hidden');
+    $('#adminPanel').classList.remove('hidden');
+    $('#userEmail').textContent = user.email || '';
+    $('#logoutBtn').classList.remove('hidden');
+    loadBookings();
+  } else {
+    $('#loginScreen').classList.remove('hidden');
+    $('#adminPanel').classList.add('hidden');
+    $('#logoutBtn').classList.add('hidden');
+    $('#userEmail').textContent = '';
+  }
+}
+
+$('#loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!sb) { $('#loginError').textContent = 'Supabase не налаштовано.'; return; }
+  const email = $('#loginEmail').value.trim();
+  const password = $('#loginPassword').value;
+  $('#loginError').textContent = '';
+  const btn = $('#loginBtn');
+  btn.disabled = true;
+  btn.firstElementChild.textContent = 'Перевірка…';
+  try {
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) {
+      $('#loginError').textContent = friendlyAuthError(error.message);
+    } else {
+      $('#loginPassword').value = '';
+      await refreshAuthUI();
+      showToast('Вітаємо!');
+    }
+  } catch (err) {
+    $('#loginError').textContent = err.message || 'Помилка входу.';
+  } finally {
+    btn.disabled = false;
+    btn.firstElementChild.textContent = 'Увійти';
+  }
+});
+
+function friendlyAuthError(msg){
+  if (!msg) return 'Помилка входу.';
+  if (/invalid login credentials/i.test(msg)) return 'Невірний email або пароль.';
+  if (/email not confirmed/i.test(msg))      return 'Email не підтверджено.';
+  return msg;
+}
+
+$('#logoutBtn').addEventListener('click', async () => {
+  if (!sb) return;
+  await sb.auth.signOut();
+  await refreshAuthUI();
+  showToast('Ви вийшли.');
+});
+
+/* ─── BOOKINGS ─── */
+let allBookings = [];
+
+async function loadBookings(){
+  if (!sb) return;
+  $('#loadingState').classList.remove('hidden');
+  $('#emptyState').classList.add('hidden');
+  $('#bookingsBody').innerHTML = '';
+  try {
+    const { data, error } = await sb.from(TABLE)
+      .select('*')
+      .order(COL.date, { ascending: false, nullsFirst: false })
+      .order(COL.time, { ascending: false, nullsFirst: false })
+      .order('id', { ascending: false });
+    if (error) throw error;
+    allBookings = data || [];
+    renderBookings(allBookings);
+  } catch (err) {
+    console.error('loadBookings error:', err);
+    showToast(err.message || 'Не вдалося завантажити записи.', true);
+    $('#loadingState').classList.add('hidden');
+  }
+}
+
+function renderBookings(list){
+  $('#loadingState').classList.add('hidden');
+  const body = $('#bookingsBody');
+  body.innerHTML = '';
+  $('#totalCount').textContent = list.length ? `· ${list.length}` : '';
+  if (!list.length) {
+    $('#emptyState').classList.remove('hidden');
+    return;
+  }
+  $('#emptyState').classList.add('hidden');
+  const frag = document.createDocumentFragment();
+  list.forEach(b => {
+    const tr = document.createElement('tr');
+    tr.dataset.id = b.id;
+    tr.innerHTML = `
+      <td>${esc(b[COL.name] || '—')}</td>
+      <td>${b[COL.phone] ? `<a href="tel:${esc(b[COL.phone])}">${esc(b[COL.phone])}</a>` : '<span class="muted">—</span>'}</td>
+      <td>${fmtDate(b[COL.date])}</td>
+      <td>${fmtTime(b[COL.time])}</td>
+      <td>${esc(b[COL.service] || '—')}</td>
+      <td>${b[COL.consultation] ? '<span class="badge-pill yes">Так</span>' : '<span class="badge-pill no">Ні</span>'}</td>
+      <td class="muted">${esc(truncate(b[COL.note], 60))}</td>
+      <td class="actions">
+        <button class="btn btn-ghost btn-sm" data-edit="${b.id}">Редагувати</button>
+        <button class="btn btn-danger btn-sm" data-delete="${b.id}">Видалити</button>
+      </td>`;
+    frag.appendChild(tr);
+  });
+  body.appendChild(frag);
+}
+
+/* utilities */
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function truncate(s, n){ if (!s) return '—'; s = String(s); return s.length > n ? s.slice(0, n) + '…' : s; }
+function fmtDate(d){
+  if (!d) return '<span class="muted">—</span>';
+  try {
+    const dt = new Date(d + 'T00:00:00');
+    return dt.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  } catch(_) { return esc(d); }
+}
+function fmtTime(t){
+  if (!t) return '<span class="muted">—</span>';
+  return String(t).slice(0, 5);
+}
+
+/* ─── SEARCH ─── */
+$('#searchInput').addEventListener('input', e => {
+  const q = e.target.value.toLowerCase().trim();
+  if (!q) return renderBookings(allBookings);
+  const filtered = allBookings.filter(b =>
+    (b[COL.name]||'').toLowerCase().includes(q) ||
+    (b[COL.phone]||'').toLowerCase().includes(q) ||
+    (b[COL.service]||'').toLowerCase().includes(q) ||
+    (b[COL.note]||'').toLowerCase().includes(q)
+  );
+  renderBookings(filtered);
+});
+
+/* ─── REFRESH ─── */
+$('#refreshBtn').addEventListener('click', loadBookings);
+
+/* ─── EDIT / DELETE ─── (event delegation) */
+$('#bookingsBody').addEventListener('click', e => {
+  const editBtn = e.target.closest('[data-edit]');
+  if (editBtn) {
+    const id = Number(editBtn.dataset.edit);
+    const b = allBookings.find(x => x.id === id);
+    if (b) openEdit(b);
+    return;
+  }
+  const delBtn = e.target.closest('[data-delete]');
+  if (delBtn) {
+    const id = Number(delBtn.dataset.delete);
+    const b = allBookings.find(x => x.id === id);
+    if (b) openDelete(b);
+  }
+});
+
+function openEdit(b){
+  $('#editId').value = b.id;
+  $('#editSub').textContent = `ID: ${b.id}`;
+  $('#editName').value = b[COL.name] || '';
+  $('#editPhone').value = b[COL.phone] || '';
+  $('#editDate').value = b[COL.date] || '';
+  $('#editTime').value = (b[COL.time] || '').slice(0, 5);
+  $('#editService').value = b[COL.service] || '';
+  $('#editConsultation').checked = !!b[COL.consultation];
+  $('#editNote').value = b[COL.note] || '';
+  $('#editError').textContent = '';
+  openModal('editModal');
+  setTimeout(() => $('#editName').focus(), 100);
+}
+
+$('#editForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!sb) return;
+  const id = Number($('#editId').value);
+  const patch = {
+    [COL.name]:         $('#editName').value.trim(),
+    [COL.phone]:        $('#editPhone').value.trim(),
+    [COL.date]:         $('#editDate').value || null,
+    [COL.time]:         $('#editTime').value || null,
+    [COL.service]:      $('#editService').value.trim() || null,
+    [COL.consultation]: $('#editConsultation').checked,
+    [COL.note]:         $('#editNote').value.trim() || null
+  };
+  if (!patch[COL.name] || !patch[COL.phone]) {
+    $('#editError').textContent = 'Імʼя та телефон обовʼязкові.';
+    return;
+  }
+  const btn = $('#saveBtn');
+  btn.disabled = true;
+  btn.textContent = 'Збереження…';
+  try {
+    const { error } = await sb.from(TABLE).update(patch).eq('id', id);
+    if (error) throw error;
+    /* Update local cache + re-render */
+    const i = allBookings.findIndex(x => x.id === id);
+    if (i >= 0) allBookings[i] = { ...allBookings[i], ...patch };
+    renderBookings(filterCurrent());
+    closeModal('editModal');
+    showToast('Зміни збережено.');
+  } catch (err) {
+    $('#editError').textContent = err.message || 'Помилка збереження.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Зберегти';
+  }
+});
+
+let pendingDeleteId = null;
+function openDelete(b){
+  pendingDeleteId = b.id;
+  $('#confirmText').textContent =
+    `Запис ${b[COL.name] || ''} (${b[COL.phone] || ''}) буде видалено назавжди.`;
+  openModal('confirmModal');
+}
+
+$('#confirmDeleteBtn').addEventListener('click', async () => {
+  if (!sb || !pendingDeleteId) return;
+  const btn = $('#confirmDeleteBtn');
+  btn.disabled = true;
+  btn.textContent = 'Видалення…';
+  try {
+    const { error } = await sb.from(TABLE).delete().eq('id', pendingDeleteId);
+    if (error) throw error;
+    allBookings = allBookings.filter(b => b.id !== pendingDeleteId);
+    renderBookings(filterCurrent());
+    closeModal('confirmModal');
+    showToast('Запис видалено.');
+  } catch (err) {
+    showToast(err.message || 'Помилка видалення.', true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Видалити';
+    pendingDeleteId = null;
+  }
+});
+
+function filterCurrent(){
+  const q = ($('#searchInput').value || '').toLowerCase().trim();
+  if (!q) return allBookings;
+  return allBookings.filter(b =>
+    (b[COL.name]||'').toLowerCase().includes(q) ||
+    (b[COL.phone]||'').toLowerCase().includes(q) ||
+    (b[COL.service]||'').toLowerCase().includes(q) ||
+    (b[COL.note]||'').toLowerCase().includes(q)
+  );
+}
+
+/* ─── BOOTSTRAP ─── */
+if (sb) {
+  refreshAuthUI();
+  sb.auth.onAuthStateChange((_event, _session) => refreshAuthUI());
+}
+</script>
+</body>
+</html>
